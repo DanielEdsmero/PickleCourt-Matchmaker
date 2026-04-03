@@ -83,7 +83,13 @@ body {
   align-items: start;
 }
 
+.controls-panel {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+}
+
 .roster-panel { grid-column: 1 / -1; }
+
 .queue-panel {
   grid-column: 2 / -1;
   grid-row: 1;
@@ -362,7 +368,7 @@ button:hover { transform: translateY(-1px); opacity: 0.95; }
 
 @media (max-width: 1260px) {
   .layout { grid-template-columns: 1fr; }
-  .roster-panel, .courts-panel, .queue-panel {
+  .roster-panel, .courts-panel, .queue-panel, .controls-panel {
     grid-column: auto;
     grid-row: auto;
   }
