@@ -9,10 +9,10 @@ const defaultState = {
     Advanced: []
   },
   courts: {
-    1: { players: [], reservationHours: 0 },
-    2: { players: [], reservationHours: 0 },
-    3: { players: [], reservationHours: 0 },
-    4: { players: [], reservationHours: 0 }
+    1: { players: [], reservationEndsAt: null },
+    2: { players: [], reservationEndsAt: null },
+    3: { players: [], reservationEndsAt: null },
+    4: { players: [], reservationEndsAt: null }
   },
   dailyRoster: []
 };
@@ -45,9 +45,12 @@ function loadState() {
     const parsed = JSON.parse(saved);
     const courts = {};
     COURT_NUMBERS.forEach((courtNumber) => {
+      const savedCourt = parsed?.courts?.[courtNumber] || {};
+      const legacyHours = Number(savedCourt?.reservationHours || 0);
+      const reservationEndsAt = Number(savedCourt?.reservationEndsAt || 0);
       courts[courtNumber] = {
-        players: Array.isArray(parsed?.courts?.[courtNumber]?.players) ? parsed.courts[courtNumber].players : [],
-        reservationHours: Number(parsed?.courts?.[courtNumber]?.reservationHours || 0)
+        players: Array.isArray(savedCourt?.players) ? savedCourt.players : [],
+        reservationEndsAt: reservationEndsAt > 0 ? reservationEndsAt : (legacyHours > 0 ? Date.now() + (legacyHours * 3600 * 1000) : null)
       };
     });
 
@@ -202,7 +205,8 @@ function updateCourtUI(courtNumber) {
   const label = getCourtLevelLabel(courtNumber);
   levelBadge.textContent = label;
   levelBadge.className = `court-level ${skillClassName(label)}`.trim();
-  hoursBadge.textContent = `Reservation: ${court.reservationHours}h`;
+  const remainingSeconds = getReservationSecondsRemaining(court);
+  hoursBadge.textContent = `Reservation: ${formatCountdown(remainingSeconds)}`;
 
   slots.forEach((slot, index) => {
     const player = court.players[index];
@@ -213,6 +217,17 @@ function updateCourtUI(courtNumber) {
 
     slot.innerHTML = `<div class="player-card ${skillClassName(player.level)}">${player.name}<br><small>${player.level}</small></div>`;
   });
+}
+
+function getReservationSecondsRemaining(court, now = Date.now()) {
+  if (!court.reservationEndsAt) return 0;
+  return Math.max(0, Math.ceil((court.reservationEndsAt - now) / 1000));
+}
+
+function formatCountdown(totalSeconds) {
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 }
 
 function updateAllCourts() {
@@ -367,10 +382,13 @@ function assignSelectedPlayersToCourt() {
 }
 
 function addReservationHour(courtNumber) {
-  state.courts[courtNumber].reservationHours += 1;
+  const court = state.courts[courtNumber];
+  const now = Date.now();
+  const startFrom = court.reservationEndsAt && court.reservationEndsAt > now ? court.reservationEndsAt : now;
+  court.reservationEndsAt = startFrom + (3600 * 1000);
   updateCourtUI(courtNumber);
   saveState();
-  setStatus(`Added 1 reservation hour to Court ${courtNumber}.`);
+  setStatus(`Added 1 hour to Court ${courtNumber}'s reservation timer.`);
 }
 
 function finishCourt(courtNumber) {
@@ -564,3 +582,21 @@ updateQueueUI();
 updateAllCourts();
 updateDailyRosterUI();
 saveState();
+
+setInterval(() => {
+  let didExpireReservation = false;
+  const now = Date.now();
+
+  COURT_NUMBERS.forEach((courtNumber) => {
+    const court = state.courts[courtNumber];
+    if (court.reservationEndsAt && court.reservationEndsAt <= now) {
+      court.reservationEndsAt = null;
+      didExpireReservation = true;
+    }
+    updateCourtUI(courtNumber);
+  });
+
+  if (didExpireReservation) {
+    saveState();
+  }
+}, 1000);
