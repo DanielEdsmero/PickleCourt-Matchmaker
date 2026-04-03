@@ -1,4 +1,6 @@
 const STORAGE_KEY = 'pickleball-matchmaker-v3';
+const COURT_NUMBERS = [1, 2, 3, 4];
+const COURT_SLOT_COUNT = 4;
 
 const defaultState = {
   queues: {
@@ -8,7 +10,9 @@ const defaultState = {
   },
   courts: {
     1: { players: [], reservationHours: 0 },
-    2: { players: [], reservationHours: 0 }
+    2: { players: [], reservationHours: 0 },
+    3: { players: [], reservationHours: 0 },
+    4: { players: [], reservationHours: 0 }
   },
   dailyRoster: []
 };
@@ -39,22 +43,21 @@ function loadState() {
     if (!saved) return structuredClone(defaultState);
 
     const parsed = JSON.parse(saved);
+    const courts = {};
+    COURT_NUMBERS.forEach((courtNumber) => {
+      courts[courtNumber] = {
+        players: Array.isArray(parsed?.courts?.[courtNumber]?.players) ? parsed.courts[courtNumber].players : [],
+        reservationHours: Number(parsed?.courts?.[courtNumber]?.reservationHours || 0)
+      };
+    });
+
     return {
       queues: {
         Beginner: Array.isArray(parsed?.queues?.Beginner) ? parsed.queues.Beginner : [],
         Intermediate: Array.isArray(parsed?.queues?.Intermediate) ? parsed.queues.Intermediate : [],
         Advanced: Array.isArray(parsed?.queues?.Advanced) ? parsed.queues.Advanced : []
       },
-      courts: {
-        1: {
-          players: Array.isArray(parsed?.courts?.[1]?.players) ? parsed.courts[1].players : [],
-          reservationHours: Number(parsed?.courts?.[1]?.reservationHours || 0)
-        },
-        2: {
-          players: Array.isArray(parsed?.courts?.[2]?.players) ? parsed.courts[2].players : [],
-          reservationHours: Number(parsed?.courts?.[2]?.reservationHours || 0)
-        }
-      },
+      courts,
       dailyRoster: Array.isArray(parsed?.dailyRoster) ? parsed.dailyRoster : []
     };
   } catch {
@@ -213,19 +216,18 @@ function updateCourtUI(courtNumber) {
 }
 
 function updateAllCourts() {
-  updateCourtUI(1);
-  updateCourtUI(2);
+  COURT_NUMBERS.forEach((courtNumber) => updateCourtUI(courtNumber));
 }
 
 function getOpenCourtNumber() {
-  if (state.courts[1].players.filter(Boolean).length === 0) return 1;
-  if (state.courts[2].players.filter(Boolean).length === 0) return 2;
+  const openCourt = COURT_NUMBERS.find((courtNumber) => state.courts[courtNumber].players.filter(Boolean).length === 0);
+  if (openCourt) return openCourt;
   return null;
 }
 
 function getFirstOpenSlot(courtNumber) {
   const courtPlayers = state.courts[courtNumber].players;
-  for (let i = 0; i < 4; i += 1) {
+  for (let i = 0; i < COURT_SLOT_COUNT; i += 1) {
     if (!courtPlayers[i]) return i;
   }
   return -1;
@@ -311,7 +313,7 @@ function addPlayerToCourt(player, courtNumber, specificSlot = null) {
 function randomizeMatch(level) {
   const openCourt = getOpenCourtNumber();
   if (!openCourt) {
-    setStatus('Both courts are currently full. Finish a court before randomizing another match.');
+    setStatus('All courts are currently full. Finish a court before randomizing another match.');
     return;
   }
 
@@ -344,7 +346,7 @@ function autoRandomize() {
 }
 
 function assignSelectedPlayersToCourt() {
-  const courtNumber = manualCourtSelect.value;
+  const courtNumber = Number(manualCourtSelect.value);
   const selectedPlayers = [...selectedQueuePlayers].map(findPlayerInQueues).filter(Boolean);
 
   if (selectedPlayers.length === 0) {
@@ -517,11 +519,11 @@ assignSelectedBtn.addEventListener('click', assignSelectedPlayersToCourt);
 clearAllBtn.addEventListener('click', clearEverything);
 
 finishButtons.forEach((button) => {
-  button.addEventListener('click', () => finishCourt(button.dataset.court));
+  button.addEventListener('click', () => finishCourt(Number(button.dataset.court)));
 });
 
 reserveButtons.forEach((button) => {
-  button.addEventListener('click', () => addReservationHour(button.dataset.reserveCourt));
+  button.addEventListener('click', () => addReservationHour(Number(button.dataset.reserveCourt)));
 });
 
 rosterSearchInput.addEventListener('input', updateDailyRosterUI);
@@ -548,7 +550,7 @@ courtSlots.forEach((slot) => {
       return;
     }
 
-    const courtNumber = slot.dataset.court;
+    const courtNumber = Number(slot.dataset.court);
     const slotIndex = Number(slot.dataset.slot);
     const added = addPlayerToCourt(player, courtNumber, slotIndex);
 
