@@ -66,6 +66,8 @@
             <select id="manualCourtSelect">
               <option value="1">Court 1</option>
               <option value="2">Court 2</option>
+              <option value="3">Court 3</option>
+              <option value="4">Court 4</option>
             </select>
           </label>
           <button id="assignSelectedBtn" class="secondary-btn" type="button">Add Selected Players to Court</button>
@@ -77,6 +79,8 @@
           <div class="button-row wrap-row">
             <button data-court="1" class="finish-btn" type="button">Finish Court 1</button>
             <button data-court="2" class="finish-btn" type="button">Finish Court 2</button>
+            <button data-court="3" class="finish-btn" type="button">Finish Court 3</button>
+            <button data-court="4" class="finish-btn" type="button">Finish Court 4</button>
             <button id="clearAllBtn" class="danger-btn" type="button">Clear All Player List</button>
           </div>
         </div>
@@ -163,6 +167,44 @@
               <div class="court-slot" data-court="2" data-slot="1">Waiting</div>
               <div class="court-slot" data-court="2" data-slot="2">Waiting</div>
               <div class="court-slot" data-court="2" data-slot="3">Waiting</div>
+            </div>
+          </div>
+
+          <div class="court-card">
+            <div class="court-topline">
+              <div>
+                <h3>Court 3</h3>
+                <div class="court-meta-row">
+                  <span id="court3Level" class="court-level">Open</span>
+                  <span id="court3Hours" class="court-hours">Reservation: 0h</span>
+                </div>
+              </div>
+              <button class="reserve-btn" data-reserve-court="3" type="button">+1 Hour</button>
+            </div>
+            <div class="court-board" id="court3">
+              <div class="court-slot" data-court="3" data-slot="0">Waiting</div>
+              <div class="court-slot" data-court="3" data-slot="1">Waiting</div>
+              <div class="court-slot" data-court="3" data-slot="2">Waiting</div>
+              <div class="court-slot" data-court="3" data-slot="3">Waiting</div>
+            </div>
+          </div>
+
+          <div class="court-card">
+            <div class="court-topline">
+              <div>
+                <h3>Court 4</h3>
+                <div class="court-meta-row">
+                  <span id="court4Level" class="court-level">Open</span>
+                  <span id="court4Hours" class="court-hours">Reservation: 0h</span>
+                </div>
+              </div>
+              <button class="reserve-btn" data-reserve-court="4" type="button">+1 Hour</button>
+            </div>
+            <div class="court-board" id="court4">
+              <div class="court-slot" data-court="4" data-slot="0">Waiting</div>
+              <div class="court-slot" data-court="4" data-slot="1">Waiting</div>
+              <div class="court-slot" data-court="4" data-slot="2">Waiting</div>
+              <div class="court-slot" data-court="4" data-slot="3">Waiting</div>
             </div>
           </div>
         </div>
