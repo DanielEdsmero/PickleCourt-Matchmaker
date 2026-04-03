@@ -86,12 +86,12 @@ body {
 .roster-panel { grid-column: 1 / -1; }
 .courts-panel {
   grid-column: 2 / -1;
-  grid-row: 1;
+  grid-row: 2;
 }
 
 .queue-panel {
   grid-column: 2 / -1;
-  grid-row: 2;
+  grid-row: 1;
 }
 
 .panel {
@@ -264,6 +264,21 @@ button:hover { transform: translateY(-1px); opacity: 0.95; }
   align-items: center;
   flex-wrap: wrap;
   flex-shrink: 0;
+}
+
+.roster-item {
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.roster-name-group {
+  min-width: 0;
+  flex: 1 1 160px;
+}
+
+.roster-actions {
+  width: 100%;
+  flex: 1 1 100%;
 }
 
 .empty-state {
