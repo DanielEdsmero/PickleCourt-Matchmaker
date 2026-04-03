@@ -84,12 +84,12 @@ body {
 }
 
 .roster-panel { grid-column: 1 / -1; }
-.courts-panel {
+.queue-panel {
   grid-column: 2 / -1;
   grid-row: 1;
 }
 
-.queue-panel {
+.courts-panel {
   grid-column: 2 / -1;
   grid-row: 2;
 }
@@ -240,6 +240,11 @@ button:hover { transform: translateY(-1px); opacity: 0.95; }
   padding: 12px;
 }
 
+.roster-item {
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
 .queue-item { cursor: grab; }
 .queue-item.selected {
   outline: 2px solid rgba(56, 189, 248, 0.75);
@@ -264,6 +269,12 @@ button:hover { transform: translateY(-1px); opacity: 0.95; }
   align-items: center;
   flex-wrap: wrap;
   flex-shrink: 0;
+}
+
+.roster-actions {
+  width: 100%;
+  justify-content: flex-start;
+  flex: 1 1 320px;
 }
 
 .empty-state {
@@ -341,9 +352,9 @@ button:hover { transform: translateY(-1px); opacity: 0.95; }
   gap: 14px;
 }
 
-.roster-name-group { display: grid; gap: 8px; }
-.roster-name { font-weight: 800; }
-.roster-meta { color: var(--muted); font-size: 13px; }
+.roster-name-group { display: grid; gap: 8px; min-width: 0; flex: 1 1 180px; }
+.roster-name { font-weight: 800; overflow-wrap: anywhere; }
+.roster-meta { color: var(--muted); font-size: 13px; overflow-wrap: anywhere; }
 
 @media (max-width: 1640px) {
   .courts-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
