@@ -78,12 +78,21 @@ body {
 
 .layout {
   display: grid;
-  grid-template-columns: 330px minmax(420px, 1fr) minmax(620px, 1.25fr);
+  grid-template-columns: 330px minmax(900px, 1fr);
   gap: 22px;
   align-items: start;
 }
 
 .roster-panel { grid-column: 1 / -1; }
+.courts-panel {
+  grid-column: 2 / -1;
+  grid-row: 1;
+}
+
+.queue-panel {
+  grid-column: 2 / -1;
+  grid-row: 2;
+}
 
 .panel {
   background: rgba(17, 24, 39, 0.94);
@@ -223,7 +232,7 @@ button:hover { transform: translateY(-1px); opacity: 0.95; }
 .queue-item, .roster-item {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   gap: 12px;
   background: rgba(11, 18, 32, 0.9);
   border: 1px solid rgba(255, 255, 255, 0.06);
@@ -242,7 +251,10 @@ button:hover { transform: translateY(-1px); opacity: 0.95; }
   font-weight: 700;
   flex: 1;
   min-width: 0;
-  word-break: break-word;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: normal;
   cursor: pointer;
 }
 
@@ -264,7 +276,7 @@ button:hover { transform: translateY(-1px); opacity: 0.95; }
 
 .courts-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 22px;
 }
 
@@ -333,9 +345,16 @@ button:hover { transform: translateY(-1px); opacity: 0.95; }
 .roster-name { font-weight: 800; }
 .roster-meta { color: var(--muted); font-size: 13px; }
 
+@media (max-width: 1640px) {
+  .courts-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
 @media (max-width: 1260px) {
   .layout { grid-template-columns: 1fr; }
-  .roster-panel { grid-column: auto; }
+  .roster-panel, .courts-panel, .queue-panel {
+    grid-column: auto;
+    grid-row: auto;
+  }
   .queue-columns, .courts-grid { grid-template-columns: 1fr; }
 }
 
